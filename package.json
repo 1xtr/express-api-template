@@ -4,8 +4,11 @@
   "description": "",
   "main": "src/index.js",
   "scripts": {
+    "patch": "npm version patch",
+    "minor": "npm version minor",
     "start": "env-cmd node .",
-    "dev": "env-cmd nodemon ."
+    "dev": "env-cmd nodemon .",
+    "prod:start": "node ."
   },
   "keywords": [
     "express",
