@@ -25,7 +25,7 @@ module.exports = async (req, res, next) => {
     if (user && user.force_logout) {
       return res.status(401).json({ message: 'Token was expired' })
     }
-    console.log({ user })
+    // console.log({ user })
     req.user = user
     return next()
   } catch (e) {

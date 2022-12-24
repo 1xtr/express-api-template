@@ -13,7 +13,7 @@ const alg = 'HS256'
 
 module.exports = {
   getToken: async (payload, type = ACCESS) => {
-    const expiresIn = type === ACCESS ? dayjs().add(2, 'm').unix() : dayjs().add(1, 'M').unix()
+    const expiresIn = type === ACCESS ? dayjs().add(1, 'd').unix() : dayjs().add(1, 'M').unix()
     const token = await new jose.SignJWT(payload)
       .setProtectedHeader({ alg })
       .setIssuedAt(dayjs().unix())

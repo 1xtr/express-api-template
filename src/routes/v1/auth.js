@@ -13,7 +13,7 @@ const ACCESS_TOKEN_VALID_TIME = 60 * 10
 const router = Router()
 
 router.post('/signup', async (req, res) => {
-  console.log('auth', req.body)
+  // console.log('auth', req.body)
   const { email, password } = req.body
   if (!email || !password) {
     return res.status(400).json({ message: 'Email or password not be empty' })
@@ -51,7 +51,7 @@ router.post('/signup', async (req, res) => {
       a_token_valid_till: accessTokenExpIn,
       r_token_valid_till: refreshTokenExpIn,
     }
-    console.log({ newUser })
+    // console.log({ newUser })
     // return created user id
     await knex(tables.users).insert(newUser)
     // res.redirect('/auth/login#login')
@@ -62,7 +62,7 @@ router.post('/signup', async (req, res) => {
       expires_in: ACCESS_TOKEN_VALID_TIME,
     })
   } catch (e) {
-    console.log(e)
+    console.log('Registration error', e)
   }
   return res.status(500).send({ message: 'Something went wrong' })
 })
@@ -98,9 +98,9 @@ router.post('/signin', async (req, res) => {
     r_token_valid_till: refreshTokenExpIn,
     force_logout: 0,
   }
-  console.log({ newUserData })
-  const updateRes = await knex(tables.users).where({ id: user.id }).update(newUserData)
-  console.log({ updateRes })
+  // console.log({ newUserData })
+  await knex(tables.users).where({ id: user.id }).update(newUserData)
+  // console.log({ updateRes })
   res.status(200).json({
     message: 'Authorization successful',
     access_token: accessToken,

@@ -1,5 +1,5 @@
 const { Router } = require('express')
-const authMiddleware = require('../../middlewares/auth.mw')
+const authMiddleware = require('../../middlewares/auth')
 const { knex, tables } = require('../../db')
 
 const router = Router()
