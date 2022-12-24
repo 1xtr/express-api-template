@@ -19,5 +19,8 @@ router.get('/logout', async (req, res) => {
   console.log({ updateResult })
   res.status(200).json({ success: true, message: 'Logged out successfully' })
 })
+router.all('*', (_, res) => {
+  res.sendStatus(404)
+})
 
 module.exports = router

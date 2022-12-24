@@ -1,4 +1,5 @@
 const { extname, normalize, join } = require('path')
+const { omit } = require('lodash')
 const dayjs = require('dayjs')
 const fileUpload = require('express-fileupload')
 const { Router } = require('express')
@@ -76,7 +77,9 @@ router.post('/upload', fileUpload(fileUploadOptions), async (req, res) => {
     return res.status(200).json({ success: true, message: `File ${newFile.name} uploaded!` })
   })
 })
-router.get('/list')
+router.get('/list', async (req, res) => {
+  res.sendStatus(200)
+})
 // eslint-disable-next-line consistent-return
 router.delete('/delete/:id', addFileDataMiddleware, async (req, res) => {
   const { file, user } = req
@@ -106,8 +109,14 @@ router.delete('/delete/:id', addFileDataMiddleware, async (req, res) => {
   }
   res.status(200).json({ success: true, message: 'File successfully deleted' })
 })
-router.get('/:id')
+router.get('/:id', addFileDataMiddleware, (req, res) => {
+  const { file } = req
+  res.json(omit(file, 'uploader_id', 'path', 'md5'))
+})
 router.get('/download/:id')
 router.put('/update/:id')
+router.all('*', (_, res) => {
+  res.sendStatus(404)
+})
 
 module.exports = router
