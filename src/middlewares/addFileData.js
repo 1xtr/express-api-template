@@ -15,7 +15,8 @@ module.exports = async (req, res, next) => {
       .where({ file_id: id })
       .where({ user_id: req.user.id })
       .first()
-    if (isValidPermissions) {
+    // добавим в поиск исключение для метода PUT при обновлении файла
+    if (isValidPermissions || (req.method === 'PUT' && req.url.includes('/update/'))) {
       const file = await knex(tables.files).where({ id }).first()
       if (!file) {
         res.status(404).json({ success: false, message: 'File not found' })
