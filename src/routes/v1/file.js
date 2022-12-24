@@ -17,6 +17,7 @@ const fileUploadOptions = {
   useTempFiles: true,
   tempFileDir: TEMP_DIR,
   abortOnLimit: true,
+  // safeFileNames: true,
   debug: false,
 }
 
@@ -113,7 +114,16 @@ router.get('/:id', addFileDataMiddleware, (req, res) => {
   const { file } = req
   res.json(omit(file, 'uploader_id', 'path', 'md5'))
 })
-router.get('/download/:id')
+router.get('/download/:id', addFileDataMiddleware, (req, res) => {
+  const { file } = req
+  res.download(normalize(file.path), file.name, (err) => {
+    if (err) {
+      console.log('Send file error', err)
+    } else {
+      console.log(`File ${file.name} send success`)
+    }
+  })
+})
 router.put('/update/:id')
 router.all('*', (_, res) => {
   res.sendStatus(404)

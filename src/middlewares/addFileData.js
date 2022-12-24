@@ -10,12 +10,21 @@ module.exports = async (req, res, next) => {
     return res.status(400).json({ success: false, message: 'File id undefined' })
   }
   try {
-    const file = await knex(tables.files).where({ id }).first()
-    if (!file) {
-      res.status(404).json({ success: false, message: 'File not found' })
+    // проверка, есть ли у пользователя данный файл
+    const isValidPermissions = await knex(tables.userFiles)
+      .where({ file_id: id })
+      .where({ user_id: req.user.id })
+      .first()
+    if (isValidPermissions) {
+      const file = await knex(tables.files).where({ id }).first()
+      if (!file) {
+        res.status(404).json({ success: false, message: 'File not found' })
+      }
+      req.file = file
+      return next()
     }
-    req.file = file
-    return next()
+    // вернем ответ, что не верный запрос, не сообщая о существовании файла с кодом 403
+    res.status(400).json({ success: false, message: 'File not found' })
   } catch (e) {
     res.status(500).json({ success: false, message: 'File request failed' })
   }
