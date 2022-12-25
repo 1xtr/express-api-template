@@ -4,7 +4,7 @@ networks:
     name: trendco-net
 
 services:
-  ximxim-db:
+  mariadb:
     image: mariadb
     container_name: ximxim-db
     hostname: ximxim-db
@@ -20,17 +20,15 @@ services:
     networks:
       - default
 
-  ximxim-express:
+  express:
     image: registry.gitlab.com/trendco/test/ximxim:latest
     container_name: ximxim-express
     hostname: ximxim-express
     restart: unless-stopped
-    links:
-      - ximxim-db:mysql
     networks:
       - default
     depends_on:
-      - ximxim-db
+      - mariadb
     environment:
       TZ: 'Europe/Moscow'
     blkio_config:
