@@ -1,5 +1,5 @@
+require('dotenv').config()
 const express = require('express')
-const dotenv = require('dotenv')
 const helmet = require('helmet')
 const compression = require('compression')
 const session = require('express-session')
@@ -7,8 +7,6 @@ const cors = require('cors')
 const { knex } = require('./db')
 
 const v1Router = require('./routes/v1')
-
-dotenv.config()
 
 const app = express()
 const port = process.env.PORT || 8080
