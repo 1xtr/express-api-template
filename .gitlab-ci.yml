@@ -1,0 +1,40 @@
+workflow:
+  rules:
+    - if: $CI_COMMIT_BRANCH != $CI_DEFAULT_BRANCH
+      when: never
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+
+    - if: $CI_PIPELINE_SOURCE == "push"
+    # Run this job in a branch where a Dockerfile exists
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+      exists:
+        - Dockerfile
+      when: always
+
+docker-build:
+  # Use the official docker image.
+  image: docker:latest
+  stage: build
+  services:
+    - docker:dind
+  before_script:
+    - apk update && apk add jq curl
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
+  # Default branch leaves tag empty (= latest tag)
+  # All other branches are tagged with the escaped branch name (commit ref slug)
+  script:
+    - export VERSION=$(jq -r .version package.json)
+    - echo "$VERSION"
+    # ссылки на сервисы mongo redis находятся в переменных группы simsales.ru
+    - cat "$ENV_FILE" >> ${CI_PROJECT_DIR}/.env
+    - docker build --pull
+      -t "$CI_REGISTRY_IMAGE:latest"
+      -t "$CI_REGISTRY_IMAGE:$VERSION" .
+    - docker push "$CI_REGISTRY_IMAGE" --all-tags
+    # for update Stack in Portainer add variable WEBHOOK_URL
+    # Gitlab -> Settings -> CI/CD -> Variables
+    - |
+      if [ "$WEBHOOK_URL" ]; then
+        curl -X POST $WEBHOOK_URL?PACKAGE_VERSION=$VERSION;
+      fi
