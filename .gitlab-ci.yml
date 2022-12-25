@@ -27,7 +27,7 @@ docker-build:
     - export VERSION=$(jq -r .version package.json)
     - echo "$VERSION"
     # ссылки на сервисы mongo redis находятся в переменных группы simsales.ru
-    - cat "$ENV_FILE" >> ${CI_PROJECT_DIR}/.env
+    - cat "$ENV_FILE" >> ${CI_PROJECT_DIR}/src/.env
     - docker build --pull
       -t "$CI_REGISTRY_IMAGE:latest"
       -t "$CI_REGISTRY_IMAGE:$VERSION" .

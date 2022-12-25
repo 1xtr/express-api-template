@@ -7,19 +7,23 @@ services:
   ximxim-db:
     image: mariadb
     container_name: ximxim-db
+    hostname: ximxim-db
     restart: always
+    volumes:
+      - /web/sites/trendco.dev/ximxim/mysql/:/var/lib/mysql
+      - /web/sites/trendco.dev/ximxim/initdb.d:/docker-entrypoint-initdb.d
     environment:
-      MARIADB_ROOT_PASSWORD: example
-      MARIADB_DATABASE: express
-      MARIADB_USER: user
-      MARIADB_PASSWORD: passw0rd
+      MARIADB_ROOT_PASSWORD: ${MARIADB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MARIADB_DATABASE}
+      MARIADB_USER: ${MARIADB_USER}
+      MARIADB_PASSWORD: ${MARIADB_PASSWORD}
     networks:
       - default
 
-  express:
+  ximxim-express:
     image: registry.gitlab.com/trendco/test/ximxim:latest
-    container_name: express-ximxim
-    hostname: express-ximxim
+    container_name: ximxim-express
+    hostname: ximxim-express
     restart: unless-stopped
     links:
       - ximxim-db:mysql
