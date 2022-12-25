@@ -1,11 +1,12 @@
 const { extname, normalize, join } = require('path')
-const { omit } = require('lodash')
+const { omit, chunk } = require('lodash')
 const dayjs = require('dayjs')
 const fileUpload = require('express-fileupload')
 const { Router } = require('express')
 const { unlink } = require('fs/promises')
 const authMiddleware = require('../../middlewares/auth')
 const addFileDataMiddleware = require('../../middlewares/addFileData')
+const userFileListMiddleware = require('../../middlewares/userFileList')
 const { knex, tables } = require('../../db')
 
 const router = Router()
@@ -78,17 +79,37 @@ router.post('/upload', fileUpload(fileUploadOptions), async (req, res) => {
     return res.status(200).json({ success: true, message: `File ${newFile.name} uploaded!` })
   })
 })
-router.get('/list', async (req, res) => {
-  res.sendStatus(200)
+// eslint-disable-next-line consistent-return
+router.get('/list', userFileListMiddleware, async (req, res) => {
+  const { userFileIds } = req
+  if (!userFileIds) {
+    return res.sendStatus(204)
+  }
+  // eslint-disable-next-line prefer-const
+  let { page = 1, limit = 10 } = req.query
+  if (limit > 50) {
+    limit = 50
+  }
+  const fileIdsChunked = chunk(userFileIds, limit)
+  if (page > fileIdsChunked.length) {
+    return res.sendStatus(204)
+  }
+  const fileList = await knex(tables.files).whereIn('id', fileIdsChunked[page - 1])
+  const hasNext = fileIdsChunked.length > page
+  res.json({
+    page,
+    hasNext,
+    total: userFileIds.length,
+    files: fileList.map((o) => omit(o, 'uploader_id', 'path', 'md5', 'upload_date')),
+  })
 })
 // eslint-disable-next-line consistent-return
 router.delete('/delete/:id', addFileDataMiddleware, async (req, res) => {
   const { file, user } = req
   /*
-  Проверим, есть ли у кого-то в списке такой же файл,
-  если нет, то удалим файл, и связь.
-  Если есть, то удалим только связь
-  */
+   * Проверим, есть ли у кого-то в списке такой же файл, если нет, то удалим файл, и связь.
+   * Если есть, то удалим только связь
+   */
   const anotherOwner = await knex(tables.userFiles)
     .where({ file_id: file.id })
     .whereNot({ user_id: user.id })
