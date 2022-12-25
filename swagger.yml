@@ -1,0 +1,398 @@
+openapi: 3.0.0
+info:
+  title: ximxim test task
+  version: 1.0.0
+  contact:
+    name: API Support
+    url: https://trendco.dev
+    email: i@trendco.dev
+servers:
+  - description: Development server
+    url: https://xim.trendco.dev/api/v1
+components:
+  securitySchemes:
+    noauthAuth:
+      type: http
+      scheme: noauth
+    bearerAuth:
+      type: http
+      scheme: bearer
+security:
+  - bearerAuth: []
+tags:
+  - name: auth
+  - name: file
+  - name: user
+paths:
+  /auth/signup:
+    post:
+      tags:
+        - auth
+      summary: registration
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: mail@example.com
+                password:
+                  type: string
+                  example: 1q2w3e4r
+      security:
+        - noauthAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: User created successfully
+                access_token: >-
+                  eyJhbGciOiJIUzI1NiJ9
+                refresh_token: >-
+                  eyJhbGciOiJIUzI1NiJ9
+                expires_in: 600
+  /auth/signin:
+    post:
+      tags:
+        - auth
+      summary: login
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                email:
+                  type: string
+                  example: mail@example.com
+                password:
+                  type: string
+                  example: 1q2w3e4r
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: User created successfully
+                access_token: >-
+                  eyJhbGciOiJIUzI1NiJ9
+                refresh_token: >-
+                  eyJhbGciOiJIUzI1NiJ9
+                expires_in: 600
+
+  /auth/new-token:
+    post:
+      tags:
+        - auth
+      summary: refresh token
+      requestBody:
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                refresh_token:
+                  type: string
+                  example: '{{REFRESH_TOKEN}}'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: Token updated successful
+                access_token: >-
+                  eyJhbGciOiJIUzI1NiJ9
+                refresh_token: >-
+                  eyJhbGciOiJIUzI1NiJ9
+                expires_in: 600
+  /file/{id}:
+    get:
+      parameters: [
+        {
+          name: id,
+          in: path,
+          required: true,
+          schema: {
+            type: string
+          }
+        }
+      ]
+      tags:
+        - file
+      summary: Get info by ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: Get by ID
+                  value:
+                    id: 12
+                    name: dev-400x272.png
+                    extension: png
+                    mimetype: image/png
+                    size: 5194
+                    upload_date: 1671910809
+                    md5: hash
+                example-1:
+                  summary: Get by ID
+                  value:
+                    id: 12
+                    name: dev-400x272.png
+                    extension: png
+                    mimetype: image/png
+                    size: 5194
+                    upload_date: 1671910809
+  /file/download/{id}:
+    get:
+      parameters: [
+        {
+          name: id,
+          in: path,
+          required: true,
+          schema: {
+            type: string
+          }
+        }
+      ]
+      tags:
+        - file
+      summary: Download file by ID
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json: {}
+  /file/list:
+    get:
+      tags:
+        - file
+      summary: List
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          example: '3'
+        - name: limit
+          in: query
+          schema:
+            type: integer
+          example: '5'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              examples:
+                example-0:
+                  summary: List
+                  value:
+                    page: 1
+                    total: 12
+                    files:
+                      - id: 12
+                        name: dev-400x272.png
+                        extension: png
+                        mimetype: image/png
+                        size: 5194
+                      - id: 16
+                        name: moyville_init.php
+                        extension: php
+                        mimetype: application/octet-stream
+                        size: 984
+                      - id: 17
+                        name: backend.png
+                        extension: png
+                        mimetype: image/png
+                        size: 1078
+                      - id: 18
+                        name: dev-sm.png
+                        extension: png
+                        mimetype: image/png
+                        size: 17694
+                      - id: 19
+                        name: dev-big.png
+                        extension: png
+                        mimetype: image/png
+                        size: 146729
+                      - id: 20
+                        name: ya_logo.png
+                        extension: png
+                        mimetype: image/png
+                        size: 22692
+                      - id: 21
+                        name: elk-stack.png
+                        extension: png
+                        mimetype: image/png
+                        size: 34527
+                      - id: 22
+                        name: duolingo.png
+                        extension: png
+                        mimetype: image/png
+                        size: 82715
+                      - id: 23
+                        name: trendco.svg
+                        extension: svg
+                        mimetype: image/svg+xml
+                        size: 5507
+                      - id: 24
+                        name: ss-logo.jpg
+                        extension: jpg
+                        mimetype: image/jpeg
+                        size: 44684
+                example-1:
+                  summary: List
+                  value:
+                    page: '3'
+                    hasNext: false
+                    total: 12
+                    files:
+                      - id: 25
+                        name: "Ð\x90Ð½Ð½Ð¾Ñ\x82Ð°Ñ\x86Ð¸Ñ\x8F 2020-12-29 204020.png"
+                        extension: png
+                        mimetype: image/png
+                        size: 26689
+                      - id: 26
+                        name: fox_ava.JPG
+                        extension: JPG
+                        mimetype: image/jpeg
+                        size: 92591
+  /file/upload:
+    post:
+      tags:
+        - file
+      summary: File upload
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: File dev-400x272.png uploaded!
+  /file/update/{id}:
+    put:
+      parameters: [
+        {
+          name: id,
+          in: path,
+          required: true,
+          schema: {
+            type: string
+          }
+        }
+      ]
+      tags:
+        - file
+      summary: File update
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: File dev-400x272.png uploaded!
+  /file/delete/{id}:
+    delete:
+      parameters: [
+        {
+          name: id,
+          in: path,
+          required: true,
+          schema: {
+            type: string
+          }
+        }
+      ]
+      tags:
+        - file
+      summary: Delete by ID
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: File successfully deleted
+  /user/info:
+    get:
+      tags:
+        - user
+      summary: info
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                client_id: c04298c4-1e04-4e51-93a5-7dfebe2213b5
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                message: Token was expired
+  /user/logout:
+    get:
+      tags:
+        - user
+      summary: logout
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+              example:
+                success: true
+                message: Logged out successfully
