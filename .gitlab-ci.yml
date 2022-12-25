@@ -20,6 +20,7 @@ docker-build:
     - docker:dind
   before_script:
     - apk update && apk add jq curl
+    - docker login -u "$CI_REGISTRY_USER" -p "$CI_REGISTRY_PASSWORD" $CI_REGISTRY
   # Default branch leaves tag empty (= latest tag)
   # All other branches are tagged with the escaped branch name (commit ref slug)
   script:
@@ -27,7 +28,7 @@ docker-build:
     - echo "$VERSION"
     # ссылки на сервисы mongo redis находятся в переменных группы simsales.ru
     - cat "$ENV_FILE" >> ${CI_PROJECT_DIR}/.env
-    - docker build --pull --no-cache
+    - docker build --pull
       -t "$CI_REGISTRY_IMAGE:latest"
       -t "$CI_REGISTRY_IMAGE:$VERSION" .
     - docker push "$CI_REGISTRY_IMAGE" --all-tags
