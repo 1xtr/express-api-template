@@ -1,0 +1,10 @@
+# Ignore everything
+*
+# Exluding all *.js files and package*.json files
+# .env file will be created on pipeline of gitlab ci/cd and added to the container image
+!.env
+!/src
+!/tmp
+!/upload
+!**/*.js
+!package*.json

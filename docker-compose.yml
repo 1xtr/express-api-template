@@ -1,0 +1,44 @@
+networks:
+  default:
+    external: true
+    name: trendco-net
+
+services:
+  ximxim-db:
+    image: mariadb
+    container_name: ximxim-db
+    restart: always
+    environment:
+      MARIADB_ROOT_PASSWORD: example
+      MARIADB_DATABASE: express
+      MARIADB_USER: user
+      MARIADB_PASSWORD: passw0rd
+    networks:
+      - default
+
+  express:
+    image: registry.gitlab.com/trendco/test/ximxim:latest
+    container_name: express-ximxim
+    hostname: express-ximxim
+    restart: unless-stopped
+    links:
+      - ximxim-db:mysql
+    networks:
+      - default
+    depends_on:
+      - ximxim-db
+    environment:
+      TZ: 'Europe/Moscow'
+    blkio_config:
+      device_read_bps:
+        - path: /dev/vda
+          rate: 1048576
+      device_read_iops:
+        - path: /dev/vda
+          rate: 100
+      device_write_bps:
+        - path: /dev/vda
+          rate: 1048576
+      device_write_iops:
+        - path: /dev/vda
+          rate: 100
